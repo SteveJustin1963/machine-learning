@@ -81,5 +81,54 @@ To test the function, you can call it with different combinations of a, b, and c
 - https://www.spiceworks.com/tech/artificial-intelligence/articles/linear-regression-vs-logistic-regression/
 - https://en.wikipedia.org/wiki/Naive_Bayes_classifier
 
+## k-nearest neighbors (KNN) algorithm, 
+the prediction for a given data point is based on the class of its nearest neighbors. The number of nearest neighbors to consider is determined by the parameter k. For classification, the predicted class for the data point is the most common class among the k nearest neighbors. For regression, the predicted value for the data point is the average of the values of the k nearest neighbors.
 
+The KNN algorithm is considered a non-parametric method, which means that it makes no assumptions about the underlying distribution of the data. It is a simple and flexible approach that can be used for both classification and regression tasks.
+
+One advantage of the KNN algorithm is that it is relatively fast to train, as it does not require any complex parameter fitting. It is also relatively fast to make predictions, as it only requires calculating the distances between the test data point and the training data points.
+
+However, the KNN algorithm can be sensitive to the choice of k and can be affected by the presence of outliers in the data. It can also perform poorly on high-dimensional data, as the distance between points can be dominated by a few dimensions that are unrelated to the target variable.
+
+In example applied to integer data. The training data consists of pairs of integers [x1, x2] and corresponding labels y, and the goal is to predict the label for a new data point [x1, x2]. The algorithm calculates the distance between the new data point and all training data points, finds the k nearest neighbors, and returns the most common label among the nearest neighbors as the predicted label for the new data point.
+
+## 4x4 Data Sample with 16 Integers in Forth
+```
+: cmp ( a b -- n )
+  a distance < b distance > or ;
+
+: classify ( points num-points point k -- label )
+  2dup >r >r
+  create pairs 4 * cells allot
+  r@ r@ 0 do
+    i cells + pairs i + ! pairs i @ point features swap - swap * + sqrt
+  loop
+  pairs qsort cmp
+  r@ r@ 0 do
+    pairs i @ label i cells + label-counts + 1 cells + +!
+  loop
+  rdrop rdrop
+  0 max-label ! -1 max-count !
+  label-counts num-points 0 do
+    i cells + label-counts i @ max-count < if
+      i max-label ! label-counts i @ max-count !
+    then
+  loop
+  max-label ;
+
+: main ( -- )
+  points create data 16 cells allot
+  data 0 , 0 , 1 , 2 , 4 , cells + , 0 , 2 , 3 , 4 , cells + , 0 , 3 , 1 , 4 , cells + , 1 , 4 , 5 , 4 , cells + , 1 , 5 , 4 , 4 , cells + , 1 , 6 , 7 , 4 , cells +
+  point create data 1 cells allot
+  data -1 , 2 , 3 , 4 , cells +
+  6 points classify 3 .
+;
+```
+This code defines the following words:
+
+cmp: a compare function that takes two data point distance pairs and returns -1 if the distance of the first pair is less than the distance of the second pair, 1 if the distance of the first pair is greater than the distance of the second pair, and 0 if the distances are equal. This function is used by the qsort function to sort the pairs by ascending distance.
+
+classify: a word that takes a list of data points
+
+## --
 
