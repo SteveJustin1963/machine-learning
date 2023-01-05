@@ -34,7 +34,7 @@ To test the function, you can call it with different combinations of a, b, and c
 1 1 1 satisfy-boolean
 ```
 
-o apply a decision tree to find a logic that satisfies a boolean condition y, you can start by selecting the input variables that have the most impact on the output of the logical system. Then, you can use the values of these variables to split the decision tree into branches, with each branch representing a different possible value for the input variables. You can continue to split the branches of the tree based on the values of the other input variables until you reach a leaf node that represents a row in the truth table where the boolean condition y is satisfied.
+apply a decision tree to find a logic that satisfies a boolean condition y, you can start by selecting the input variables that have the most impact on the output of the logical system. Then, you can use the values of these variables to split the decision tree into branches, with each branch representing a different possible value for the input variables. You can continue to split the branches of the tree based on the values of the other input variables until you reach a leaf node that represents a row in the truth table where the boolean condition y is satisfied.
 ```
 : satisfy-boolean ( a b c -- a b c )
   a b and c not or
@@ -82,17 +82,10 @@ To test the function, you can call it with different combinations of a, b, and c
 - https://en.wikipedia.org/wiki/Naive_Bayes_classifier
 
 ## k-nearest neighbors (KNN) algorithm, 
-the prediction for a given data point is based on the class of its nearest neighbors. The number of nearest neighbors to consider is determined by the parameter k. For classification, the predicted class for the data point is the most common class among the k nearest neighbors. For regression, the predicted value for the data point is the average of the values of the k nearest neighbors.
-
-The KNN algorithm is considered a non-parametric method, which means that it makes no assumptions about the underlying distribution of the data. It is a simple and flexible approach that can be used for both classification and regression tasks.
-
-One advantage of the KNN algorithm is that it is relatively fast to train, as it does not require any complex parameter fitting. It is also relatively fast to make predictions, as it only requires calculating the distances between the test data point and the training data points.
-
-However, the KNN algorithm can be sensitive to the choice of k and can be affected by the presence of outliers in the data. It can also perform poorly on high-dimensional data, as the distance between points can be dominated by a few dimensions that are unrelated to the target variable.
 
 In example applied to integer data. The training data consists of pairs of integers [x1, x2] and corresponding labels y, and the goal is to predict the label for a new data point [x1, x2]. The algorithm calculates the distance between the new data point and all training data points, finds the k nearest neighbors, and returns the most common label among the nearest neighbors as the predicted label for the new data point.
 
-## 4x4 Data Sample with 16 Integers in Forth
+- 4x4 Data Sample with 16 Integers in Forth:
 ```
 : cmp ( a b -- n )
   a distance < b distance > or ;
@@ -130,5 +123,85 @@ cmp: a compare function that takes two data point distance pairs and returns -1 
 
 classify: a word that takes a list of data points
 
-## --
+## linear model for machine learning 
+
+```
+: predict ( x weights -- y )
+  x weights 0 do
+    i cells + x i cells + * swap +
+  loop ;
+
+: train ( x y learning-rate -- weights )
+  weights create data x 0 cells + y 0 cells + 2 cells allot
+  x weights y predict - y * learning-rate * weights 0 do
+    i cells + weights i @ x i cells + * - weights i +!
+  loop ;
+
+: main ( -- )
+  0.1 learning-rate !
+  0.1 weights create data 4 cells allot
+  data 1 2 3 4 cells + , 5 6 7 8 cells + , 9 10 11 12 cells + , 13 14 15 16 cells + x create
+  data 17 18 19 20 cells + , 21 22 23 24 cells + , 25 26 27 28 cells + , 29 30 31 32 cells + y create
+  100 0 do
+    x y learning-rate train weights
+  loop
+  x y predict .
+;
+```
+code defines the following words:
+
+predict: a word that takes an input vector (x) and a vector of weights as input and returns the predicted output (y).
+
+train: a word that takes an input matrix (x), an output vector (y), and a learning rate as input and returns a updated vector of weights. This word updates the weights by calculating the error between the predicted output and the actual output, and adjusting the weights accordingly using gradient descent.
+
+main: the entry point of the program, which initializes the weights and learning rate, generates some random training data, and trains the model using gradient descent. It then makes a prediction using the trained model and prints the result.
+
+## another
+```
+: predict ( x weights -- y )
+  \ Predict the output given an input vector and a vector of weights
+  x weights 0 do
+    i cells + x i cells + * swap +
+  loop ;
+
+: loss ( x y weights -- error )
+  \ Calculate the mean squared error between the predicted output and the actual output
+  x y predict - y * y * / ;
+
+: gradient ( x y weights -- gradients )
+  \ Calculate the gradients of the weights with respect to the loss function
+  gradients create data x 0 cells + y 0 cells + 2 cells allot
+  x gradients y predict - y * x 0 do
+    i cells + gradients i @ x i cells + * - gradients i +!
+  loop ;
+
+: update-weights ( learning-rate weights gradients -- updated-weights )
+  \ Update the weights using the gradients and the learning rate
+  updated-weights create data weights 0 cells + gradients 0 cells + 2 cells allot
+  weights updated-weights 0 do
+    i cells + updated-weights i @ weights i @ learning-rate * - updated-weights i +!
+  loop ;
+
+: train ( x y learning-rate -- weights )
+  \ Train the model using gradient descent
+  0 weights create data x 0 cells + y 0 cells + 2 cells allot
+  100 0 do
+    x y weights gradient learning-rate update-weights weights !
+  loop ;
+
+: main ( -- )
+  \ Entry point of the program
+  0.1 learning-rate !
+  0.1 weights create data 4 cells allot
+  data 1 2 3 4 cells + , 5 6 7 8 cells + , 9 10 11 12 cells + , 13 14 15 16 cells + x create
+  data 17 18 19 20 cells + , 21 22 23 24 cells + , 25 26 27 28 cells +
+  data 29 30 31 32 cells + y create
+  \ Generate some random training data
+  x y learning-rate train . \ Train the model and print the resulting weights
+;
+```
+This code is similar to the previous example, but it includes a new word, loss, which calculates the mean squared error between the predicted output and the actual output. It also includes a new word, gradient, which calculates the gradients of the weights with respect to the loss function. The update-weights word uses the gradients to update the weights using gradient descent. The train word uses these new words to train the model using gradient descent. The main function generates some random training data and calls the train function to train the model. After training, the weights of the model are printed.
+
+
+
 
