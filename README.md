@@ -73,4 +73,13 @@ To test the function, you can call it with different combinations of a, b, and c
 1 1 0 satisfy-boolean . . .
 1 1 1 satisfy-boolean . . .
 ```
+## Ref
+- https://scikit-learn.org/stable/modules/tree.html
+- https://en.wikipedia.org/wiki/Decision_tree_learning
+- https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm
+- https://en.wikipedia.org/wiki/Linear_model
+- https://www.spiceworks.com/tech/artificial-intelligence/articles/linear-regression-vs-logistic-regression/
+- https://en.wikipedia.org/wiki/Naive_Bayes_classifier
+
+
 
