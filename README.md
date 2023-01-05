@@ -1,4 +1,4 @@
-# machine learning algorithm for a low-power computer slow computer
+# machine learning algorithm for low-power slow computer
 see https://github.com/SteveJustin1963/machine-learning/wiki for notes 
 
 ## decision tree
